@@ -53,7 +53,7 @@ ENV ROS_WS=/opt/ros_ws
 WORKDIR $ROS_WS
 RUN mkdir -pv $ROS_WS/src
 
-# ------------------    Copy packages
+# Copy packages
 COPY ./FUZZ_TARGET src/
 
 # ENV update & Download the required package
@@ -73,11 +73,14 @@ COPY ./FUZZ_UTIL/SETUP /root/.SETUP
 RUN cat /root/.SETUP 1>> /root/.bashrc
 
 # fuzz setup
+ENV FUZZ_UTIL_DIR="/root/RESULT"
+
 COPY ./FUZZ_UTIL/fuzz_start.sh /root/fuzz_start.sh
 
-RUN mkdir -pv /root/RESULT/CVG_CHECK
-# COPY ./FUZZ_UTIL/cvg_check_file/cvg_check /root/RESULT/CVG_CHECK/
-COPY ./FUZZ_UTIL/cvg_check_file/cvg_check.c /root/RESULT/CVG_CHECK/
+# CVG, crash check file COPY
+RUN mkdir -pv $FUZZ_UTIL_DIR/CVG_CHECK
+
+COPY ./FUZZ_UTIL/cvg_check_file/cvg_check.c $FUZZ_UTIL_DIR/CVG_CHECK/
 RUN /bin/bash -c "gcc -o \
 	/root/RESULT/CVG_CHECK/cvg_check \
 	/root/RESULT/CVG_CHECK/cvg_check.c"
@@ -85,4 +88,12 @@ RUN /bin/bash -c "gcc -o \
 COPY ./FUZZ_UTIL/cvg_check_systemctl/fuzzing_hour_cvg_check.timer /lib/systemd/system/
 COPY ./FUZZ_UTIL/cvg_check_systemctl/fuzzing_hour_cvg_check.service /lib/systemd/system/
 
-COPY ./FUZZ_UTIL/FUZZ_DIR_GEN.sh /root/RESULT/FUZZ_DIR_GEN.sh
+# SHM file deleter COPY
+RUN mkdir -pv $FUZZ_UTIL_DIR/SHM_DELETER
+COPY ./FUZZ_UTIL/shm_deleter/shm_deleter.sh $FUZZ_UTIL_DIR/SHM_DELETER/
+
+COPY ./FUZZ_UTIL/shm_deleter/shm_deleter.service /lib/systemd/system/
+COPY ./FUZZ_UTIL/shm_deleter/shm_deleter.timer /lib/systemd/system/
+
+# FUZZ UTIL : DIR Generator
+COPY ./FUZZ_UTIL/FUZZ_DIR_GEN.sh $FUZZ_UTIL_DIR/FUZZ_DIR_GEN.sh
