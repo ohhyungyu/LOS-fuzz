@@ -1,0 +1,11 @@
+[Unit]
+Description=shm_deleter timer
+
+[Timer]
+OnBootSec=1min
+AccuracySec=1s
+OnActiveSec=60min
+OnUnitActiveSec=60min
+Persistent=true
+[Install]
+WantedBy=timers.target

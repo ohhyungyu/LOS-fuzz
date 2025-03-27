@@ -1,0 +1,13 @@
+[Unit]
+Description=shm_deleter service
+Wants=network-online.target
+After=basic.target
+
+[Service]
+User=root
+Type=oneshot
+WorkingDirectory=/root/
+ExecStart=/root/RESULT/SHM_DELETER/shm_deleter.sh
+
+[Install]
+WantedBy=multi-user.target

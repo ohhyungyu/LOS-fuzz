@@ -1,0 +1,12 @@
+topics:
+  minimal_topic:
+    headers_file: std_msgs/msg/string.hpp
+    source: src/publisher_subscriber_example/src/publisher_member_function.cpp
+    type: std_msgs::msg::String
+    parameters: []
+services:
+  add_three_ints:
+    headers_file: tutorial_interfaces/srv/add_three_ints.hpp
+    source: src/client_service_example/src/add_three_ints_server.cpp
+    type: tutorial_interfaces::srv::AddThreeInts
+    parameters: []

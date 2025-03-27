@@ -1,0 +1,7 @@
+alias SETUP='source /opt/ros/foxy/setup.bash ;\
+	source /opt/ros_ws/install/setup.bash;\
+	export CC=afl-gcc-fast ;\
+	export CXX=afl-g++-fast'
+
+alias ros_ws='cd /opt/ros_ws/'
+alias ros_share='cd /opt/ros/foxy/share'
