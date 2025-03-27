@@ -100,5 +100,5 @@ int main(int argc_fuzz, char *argv_fuzz)
 
     // Continue normal system under test code
     std::cout << "Continuing normal code" << std::endl;
-    PREVIOUS_main(argc_fuzz, argv_fuzz)
+    PREVIOUS_main(argc_fuzz, argv_fuzz);
 }

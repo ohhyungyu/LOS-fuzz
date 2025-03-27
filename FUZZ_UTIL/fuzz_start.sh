@@ -1,17 +1,13 @@
-FUZZED_TARGET_DIR=build/nav2_amcl #build/nav2_bt_navigator # build/nav2_amcl
-FUZZED_TARGET=amcl # bt_navigator # amcl
-HEAD_DIR=/opt/ros_ws/src/nav2_amcl # nav2_bt_navigator # nav2_amcl
+FUZZED_TARGET_DIR= # build/client_service_example
+FUZZED_TARGET= # generated_fuzzer
+HEAD_DIR= # /opt/ros_ws/src/client_service_example
 RESULT_DIR=/root/RESULT/$FUZZED_TARGET
 
-if [ $CXX -ne "afl-g++" ]
-then
-	SETUP
-fi
-
-AFL_I_DONT_CARE_ABOUT_MISSING_CRASHES=1
+echo core | sudo tee /proc/sys/kernel/core_pattern
 
 source $HEAD_DIR/install/setup.bash
-systemctl start fuzzing_hour_cvg_check.timer
+# systemctl start fuzzing_hour_cvg_check.timer
+systemctl start shm_deleter.timer
 
 afl-fuzz \
 	-i \
@@ -20,5 +16,9 @@ afl-fuzz \
 	$RESULT_DIR/outputs/ \
 	-m none \
 	-t 1000+ \
+	# -p mmopt CHOOSE THE POWER SCHEDULE
+	-L 0 \
 	-- \
 	$HEAD_DIR/$FUZZED_TARGET_DIR/$FUZZED_TARGET
+
+systemctl stop shm_deleter.timer
