@@ -80,13 +80,13 @@ COPY ./FUZZ_UTIL/fuzz_start.sh /root/fuzz_start.sh
 # CVG, crash check file COPY
 RUN mkdir -pv $FUZZ_UTIL_DIR/CVG_CHECK
 
-COPY ./FUZZ_UTIL/cvg_check_file/cvg_check.c $FUZZ_UTIL_DIR/CVG_CHECK/
+COPY ./FUZZ_UTIL/cvg_check/cvg_check.c $FUZZ_UTIL_DIR/CVG_CHECK/
 RUN /bin/bash -c "gcc -o \
 	/root/RESULT/CVG_CHECK/cvg_check \
 	/root/RESULT/CVG_CHECK/cvg_check.c"
 
-COPY ./FUZZ_UTIL/cvg_check_systemctl/fuzzing_hour_cvg_check.timer /lib/systemd/system/
-COPY ./FUZZ_UTIL/cvg_check_systemctl/fuzzing_hour_cvg_check.service /lib/systemd/system/
+COPY ./FUZZ_UTIL/cvg_check/fuzzing_hour_cvg_check.timer /lib/systemd/system/
+COPY ./FUZZ_UTIL/cvg_check/fuzzing_hour_cvg_check.service /lib/systemd/system/
 
 # SHM file deleter COPY
 RUN mkdir -pv $FUZZ_UTIL_DIR/SHM_DELETER

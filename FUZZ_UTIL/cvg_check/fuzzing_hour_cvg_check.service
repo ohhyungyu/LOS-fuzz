@@ -1,0 +1,13 @@
+[Unit]
+Description=cvg_check service
+Wants=network-online.target
+After=basic.target
+
+[Service]
+User=root
+Type=oneshot
+WorkingDirectory=/root/RESULT/
+ExecStart=/root/RESULT/CVG_CHECK/cvg_check
+
+[Install]
+WantedBy=multi-user.target
