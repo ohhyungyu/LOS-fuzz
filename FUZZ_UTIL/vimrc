@@ -4,6 +4,7 @@ set si
 set cindent
 set shiftwidth=4
 set tabstop=4
+set expandtab
 set ignorecase
 set hlsearch
 set nocompatible
