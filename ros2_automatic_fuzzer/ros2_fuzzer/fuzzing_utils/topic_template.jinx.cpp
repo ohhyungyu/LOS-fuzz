@@ -127,8 +127,6 @@ int main(int argc_fuzz, char *argv_fuzz[])
 		std::cout << "Something crashed" << std::endl;
 		exit(EXIT_FAILURE);
 	} else if (pid == 0) {
-		int argc = 1;
-		char* argv[] = {"./my_fuzz_target", NULL};
 		fuzz_target(argc_fuzz, argv_fuzz, parent_pid);
 		exit(EXIT_FAILURE);
 	}
