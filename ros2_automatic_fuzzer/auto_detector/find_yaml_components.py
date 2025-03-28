@@ -16,15 +16,15 @@ def find_yaml_components(rootDir: str, overwrite: bool) -> None:
     cppfiles = []
     for dirName, subdirList, fileList in os.walk(rootDir):
         for fname in fileList:
-            if fname.endswith("cpp"):
+            if fname.endswith(".cpp"):
                 cppfiles.append(os.path.join(dirName, fname))
 
     logging.debug(f"Logged {len(cppfiles)} .cpp files")
 
     # Catches expressions of the type create_publisher<A>("B"
     # being A the type being catched, and B the name of the service
-    create_publisher_regex = (
-        r"create_publisher\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*\"(?P<name>[^\"]+)\""
+    create_subscription_regex = (
+        r"create_subscription\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*\"(?P<name>[^\"]+)\""
     )
 
     # Catches expressions of the type create_service<A>("B"
@@ -35,17 +35,18 @@ def find_yaml_components(rootDir: str, overwrite: bool) -> None:
 
     # Catches expressions of the type create_server<A>(..., "B")
     # being A the type being catched, and B the name of the server
+    # Have to change !@!!!@!
     create_action_regex = (
         r"create_server\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*[^,]+,\s*\"(?P<name>[^\"]+)\""
     )
 
     logging.debug("Checking file contents")
-    found_publishers = dict()
+    found_subscription = dict()
     found_services = dict()
     found_actions = dict()
 
     finding_patterns = [
-        (create_publisher_regex, found_publishers),
+        (create_subscription_regex, found_subscription),
         (create_service_regex, found_services),
         (create_action_regex, found_actions),
     ]
@@ -76,8 +77,8 @@ def find_yaml_components(rootDir: str, overwrite: bool) -> None:
 
     # Generate results
     yaml_result = {}
-    if found_publishers:
-        yaml_result["topics"] = found_publishers
+    if found_subscription:
+        yaml_result["topics"] = found_subscription
 
     if found_services:
         yaml_result["services"] = found_services
@@ -85,7 +86,7 @@ def find_yaml_components(rootDir: str, overwrite: bool) -> None:
     if found_actions:
         yaml_result["actions"] = found_actions
 
-    if len(found_publishers) + len(found_services) + len(found_actions) == 0:
+    if len(found_subscription) + len(found_services) + len(found_actions) == 0:
         logging.error(
             "No component has been found\n"
             "Are you in (or have you provided) the correct path?"
