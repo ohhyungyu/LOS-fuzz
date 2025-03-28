@@ -195,7 +195,7 @@ def map_type_to_headers_file(type: str) -> str:
             "composition_interfaces::srv::UnloadNode_Response": "",
             "composition_interfaces::srv::ListNodes_Request": "",
             "composition_interfaces::srv::ListNodes_Response": "",
-            "composition_interfaces::srv::LoadNode_Request": : ""
+            "composition_interfaces::srv::LoadNode_Request": ""
         },
         "diagnostic_msgs_srv": {
             "__LOCATION": "diagnostic_msgs/srv/",
