@@ -379,11 +379,11 @@ def find_yaml_components(rootDir: str, overwrite: bool) -> None:
             contents = contents[contents.find(';')+1: ]
 
             instance = find_sub_srv_act_with_regex(content_line)
-            if instance[1]:
+            if type(instance) == tuple:
                 logging.debug(f"Found instance at {filepath}")
 
-                name = instance[1].group("name")
-                type = instance[1].group("type")
+                name = instance[1]["name"]
+                type = instance[1]["type"]
 
                 if "::" not in type:
                     logging.warning(f"The `{type}` type may be incomplete")
@@ -433,36 +433,42 @@ def find_sub_srv_act_with_regex(code_line: str) -> tuple:
     Return Value : Tuple which include sequence about sub, srv, act and instance about re.search
     Sequence : subscription -> 0, service -> 1, action -> 2
     '''
+    # rf'get_parameter\s*\(\s*"(?P<param_name>[^"]+)"\s*,\s*{var_name}\s*\)'
+    # 
     # Catches expressions of the type create_publisher<A>("B"
     # being A the type being catched, and B the name of the service
-    create_subscription_regex = (
-        r"create_subscription\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*\"(?P<name>[^\"]+)\""
-    )
+    create_subscription_regex = r"create_subscription\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*\"(?P<name>[^\"]+)\""
+    create_subscription_string = "create_subscription"
+    create_subscription_regex_var = r'create_subscription\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*(?P<var_name>[^,\s]+)'
 
     # Catches expressions of the type create_service<A>("B"
     # being A the type being catched, and B the name of the service
-    create_service_regex = (
-        r"create_service\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*\"(?P<name>[^\"]+)\""
-    )
+    create_service_regex = r"create_service\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*\"(?P<name>[^\"]+)\""
+    create_service_string = "create_service"
+    create_service_regex_var = r'create_service\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*"(?P<var_name>[^"]+)"'
 
     # Catches expressions of the type create_server<A>(..., "B")
     # being A the type being catched, and B the name of the server
     # Have to change !@!!!@!
-    create_action_regex = (
-        r"create_server\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*[^,]+,\s*\"(?P<name>[^\"]+)\""
-    )
+    create_action_regex = r"create_server\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*[^,]+,\s*\"(?P<name>[^\"]+)\""
+    create_action_string = "create_server"
+    create_action_regex_var = r'create_server\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*[^,]+,\s*"(?P<var_name>[^"]+)"'
 
-    seq = 0
-    regexs = (create_subscription_regex, create_service_regex, create_action_regex)
-    for regex in regexs:
-        instance = re.search(regex, code_line)
+    if create_subscription_string in code_line:
+        instance = re.search(create_subscription_regex, code_line)
         if instance:
-            break
-        seq += 1
-
-    return (seq, instance)
-
-
+            return (0, {"name": instance.group("name"), "type": instance.group("type")})
+        
+    elif create_service_string in code_line:
+        instance = re.search(create_service_regex, code_line)
+        if instance:
+            return (1, {"name": instance.group("name"), "type": instance.group("type")})
+    elif create_action_string in code_line:
+        instance = re.search(create_action_regex, code_line)
+        if instance:
+            return (2, {"name": instance.group("name"), "type": instance.group("type")})
+    else :
+        return False
 
 def map_type_to_headers_file(type: str) -> str:
     for _HD in mapping.keys():
