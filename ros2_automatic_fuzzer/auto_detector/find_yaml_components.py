@@ -352,35 +352,14 @@ def find_yaml_components(rootDir: str, overwrite: bool) -> None:
 
     logging.debug(f"Logged {len(cppfiles)} .cpp files")
 
-    # Catches expressions of the type create_publisher<A>("B"
-    # being A the type being catched, and B the name of the service
-    create_subscription_regex = (
-        r"create_subscription\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*\"(?P<name>[^\"]+)\""
-    )
 
-    # Catches expressions of the type create_service<A>("B"
-    # being A the type being catched, and B the name of the service
-    create_service_regex = (
-        r"create_service\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*\"(?P<name>[^\"]+)\""
-    )
-
-    # Catches expressions of the type create_server<A>(..., "B")
-    # being A the type being catched, and B the name of the server
-    # Have to change !@!!!@!
-    create_action_regex = (
-        r"create_server\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*[^,]+,\s*\"(?P<name>[^\"]+)\""
-    )
 
     logging.debug("Checking file contents")
     found_subscription = dict()
     found_services = dict()
     found_actions = dict()
 
-    finding_patterns = [
-        (create_subscription_regex, found_subscription),
-        (create_service_regex, found_services),
-        (create_action_regex, found_actions),
-    ]
+    found_things = (found_subscription, found_services, found_actions)
 
     for filepath in cppfiles:
         contents = ""
@@ -399,19 +378,17 @@ def find_yaml_components(rootDir: str, overwrite: bool) -> None:
                 break
             contents = contents[contents.find(';')+1: ]
 
-            for (regex, container) in finding_patterns:
-                instance = re.search(regex, content_line)
-            
-            if instance:
+            instance = find_sub_srv_act_with_regex(content_line)
+            if instance[1]:
                 logging.debug(f"Found instance at {filepath}")
 
-                name = instance.group("name")
-                type = instance.group("type")
+                name = instance[1].group("name")
+                type = instance[1].group("type")
 
                 if "::" not in type:
                     logging.warning(f"The `{type}` type may be incomplete")
 
-                container[name] = {
+                found_things[instance[0]][name] = {
                     "headers_file": map_type_to_headers_file(type),
                     "source": os.path.relpath(filepath, start=rootDir),
                     "type": type,
@@ -445,8 +422,47 @@ def find_yaml_components(rootDir: str, overwrite: bool) -> None:
     logging.info("The file `fuzz.yaml` has been generated")
     logging.warning("Fill the TODOs accordingly before continuing!")
 
+# Need to make Sorter about package name 
 def find_package_name(filepath):
     pass
+
+def find_sub_srv_act_with_regex(code_line: str) -> tuple:
+    '''
+    Find_sub_srv_act_with_regex function is find things about regex\n
+    Parameter : One Line of Code
+    Return Value : Tuple which include sequence about sub, srv, act and instance about re.search
+    Sequence : subscription -> 0, service -> 1, action -> 2
+    '''
+    # Catches expressions of the type create_publisher<A>("B"
+    # being A the type being catched, and B the name of the service
+    create_subscription_regex = (
+        r"create_subscription\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*\"(?P<name>[^\"]+)\""
+    )
+
+    # Catches expressions of the type create_service<A>("B"
+    # being A the type being catched, and B the name of the service
+    create_service_regex = (
+        r"create_service\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*\"(?P<name>[^\"]+)\""
+    )
+
+    # Catches expressions of the type create_server<A>(..., "B")
+    # being A the type being catched, and B the name of the server
+    # Have to change !@!!!@!
+    create_action_regex = (
+        r"create_server\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*[^,]+,\s*\"(?P<name>[^\"]+)\""
+    )
+
+    seq = 0
+    regexs = (create_subscription_regex, create_service_regex, create_action_regex)
+    for regex in regexs:
+        instance = re.search(regex, code_line)
+        if instance:
+            break
+        seq += 1
+
+    return (seq, instance)
+
+
 
 def map_type_to_headers_file(type: str) -> str:
     for _HD in mapping.keys():
