@@ -382,16 +382,16 @@ def find_yaml_components(rootDir: str, overwrite: bool) -> None:
             if type(instance) == tuple:
                 logging.debug(f"Found instance at {filepath}")
 
-                name = instance[1]["name"]
-                type = instance[1]["type"]
+                com_name = instance[1]["com_name"]
+                com_type = instance[1]["com_type"]
 
-                if "::" not in type:
-                    logging.warning(f"The `{type}` type may be incomplete")
+                if "::" not in com_type:
+                    logging.warning(f"The `{com_type}` type may be incomplete")
 
-                found_things[instance[0]][name] = {
-                    "headers_file": map_type_to_headers_file(type),
+                found_things[instance[0]][com_name] = {
+                    "headers_file": map_type_to_headers_file(com_type),
                     "source": os.path.relpath(filepath, start=rootDir),
-                    "type": type,
+                    "type": com_type,
                     "parameters": [],
                 }
 
@@ -457,16 +457,16 @@ def find_sub_srv_act_with_regex(code_line: str) -> tuple:
     if create_subscription_string in code_line:
         instance = re.search(create_subscription_regex, code_line)
         if instance:
-            return (0, {"name": instance.group("name"), "type": instance.group("type")})
+            return (0, {"com_name": instance.group("name"), "com_type": instance.group("type")})
         
     elif create_service_string in code_line:
         instance = re.search(create_service_regex, code_line)
         if instance:
-            return (1, {"name": instance.group("name"), "type": instance.group("type")})
+            return (1, {"com_name": instance.group("name"), "com_type": instance.group("type")})
     elif create_action_string in code_line:
         instance = re.search(create_action_regex, code_line)
         if instance:
-            return (2, {"name": instance.group("name"), "type": instance.group("type")})
+            return (2, {"com_name": instance.group("name"), "com_type": instance.group("type")})
     else :
         return False
 
