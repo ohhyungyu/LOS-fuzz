@@ -383,31 +383,40 @@ def find_yaml_components(rootDir: str, overwrite: bool) -> None:
     ]
 
     for filepath in cppfiles:
+        contents = ""
         try:
             with open(filepath) as f:
                 contents = f.read()
-                for (regex, container) in finding_patterns:
-                    while True:
-                        instance = re.search(regex, contents)
-                        if instance:
-                            logging.debug(f"Found instance at {filepath}")
-
-                            name = instance.group("name")
-                            type = instance.group("type")
-
-                            if "::" not in type:
-                                logging.warning(f"The `{type}` type may be incomplete")
-
-                            container[name] = {
-                                "headers_file": map_type_to_headers_file(type),
-                                "source": os.path.relpath(filepath, start=rootDir),
-                                "type": type,
-                                "parameters": [],
-                            }
-                        else:
-                            break
         except:
             pass
+        
+        if contents == "":
+            continue
+
+        while True:
+            content_line = contents[: contents.find(';')+1]
+            if content_line == "":
+                break
+            contents = contents[contents.find(';')+1: ]
+
+            for (regex, container) in finding_patterns:
+                instance = re.search(regex, content_line)
+            
+            if instance:
+                logging.debug(f"Found instance at {filepath}")
+
+                name = instance.group("name")
+                type = instance.group("type")
+
+                if "::" not in type:
+                    logging.warning(f"The `{type}` type may be incomplete")
+
+                container[name] = {
+                    "headers_file": map_type_to_headers_file(type),
+                    "source": os.path.relpath(filepath, start=rootDir),
+                    "type": type,
+                    "parameters": [],
+                }
 
     # Generate results
     yaml_result = {}
