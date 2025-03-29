@@ -432,8 +432,11 @@ def get_add_declare_find_name(var_name: str, code_all: str):
     get_param_regex = rf"get_parameter\s*\(\s*\"(?P<param_name>[^\"]+)\"\s*,\s*{var_name}\s*\)"
     
     instance = re.search(get_param_regex, code_all)
-    param_name = instance.group("param_name")
-
+    if instance:
+        param_name = instance.group("param_name")
+    else:
+        return False
+    
     add_param_regex = rf"add_parameter\s*\(\s*\"{param_name}\"\s*,\s*(?:\w+::)?ParameterValue\s*\(\s*\"(?P<name>[^\"]+)\"\s*\)"
     declare_param_regex = rf"declare_parameter\s*\(\s*\"{param_name}\"\s*,\s*(?:\w+::)?ParameterValue\s*\(\s*\"(?P<name>[^\"]+)\"\s*\)"
 
