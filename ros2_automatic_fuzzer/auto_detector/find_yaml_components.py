@@ -371,6 +371,8 @@ def find_yaml_components(rootDir: str, overwrite: bool) -> None:
         
         if contents == "":
             continue
+        
+        backup_content = contents
 
         while True:
             content_line = contents[: contents.find(';')+1]
@@ -378,7 +380,7 @@ def find_yaml_components(rootDir: str, overwrite: bool) -> None:
                 break
             contents = contents[contents.find(';')+1: ]
 
-            instance = find_sub_srv_act_with_regex(content_line)
+            instance = find_sub_srv_act_with_regex(content_line, backup_content)
             if type(instance) == tuple:
                 logging.debug(f"Found instance at {filepath}")
 
@@ -423,50 +425,74 @@ def find_yaml_components(rootDir: str, overwrite: bool) -> None:
     logging.warning("Fill the TODOs accordingly before continuing!")
 
 # Need to make Sorter about package name 
-def find_package_name(filepath):
+def find_package_name(filepath) -> str:
     pass
 
-def find_sub_srv_act_with_regex(code_line: str) -> tuple:
+def get_add_declare_find_name(var_name: str, code_all: str):
+    get_param_regex = rf"get_parameter\s*\(\s*\"(?P<param_name>[^\"]+)\"\s*,\s*{var_name}\s*\)"
+    
+    instance = re.search(get_param_regex, code_all)
+    param_name = instance.group("param_name")
+
+    add_param_regex = rf"add_parameter\s*\(\s*\"{param_name}\"\s*,\s*(?:\w+::)?ParameterValue\s*\(\s*\"(?P<name>[^\"]+)\"\s*\)"
+    declare_param_regex = rf"declare_parameter\s*\(\s*\"{param_name}\"\s*,\s*(?:\w+::)?ParameterValue\s*\(\s*\"(?P<name>[^\"]+)\"\s*\)"
+
+    instance = re.search(declare_param_regex, code_all)
+    if instance:
+        return instance.group("name")
+    instance = re.search(add_param_regex, code_all)
+    if instance:
+        return instance.group("name")
+    
+    return False
+
+def find_sub_srv_act_with_regex(code_line: str, code_all: str) -> tuple:
     '''
     Find_sub_srv_act_with_regex function is find things about regex\n
     Parameter : One Line of Code
     Return Value : Tuple which include sequence about sub, srv, act and instance about re.search
     Sequence : subscription -> 0, service -> 1, action -> 2
     '''
-    # rf'get_parameter\s*\(\s*"(?P<param_name>[^"]+)"\s*,\s*{var_name}\s*\)'
-    # 
+
     # Catches expressions of the type create_publisher<A>("B"
     # being A the type being catched, and B the name of the service
     create_subscription_regex = r"create_subscription\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*\"(?P<name>[^\"]+)\""
     create_subscription_string = "create_subscription"
-    create_subscription_regex_var = r'create_subscription\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*(?P<var_name>[^,\s]+)'
+    create_subscription_regex_var = r"create_subscription\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*(?P<var_name>[^,\s]+)"
 
     # Catches expressions of the type create_service<A>("B"
     # being A the type being catched, and B the name of the service
     create_service_regex = r"create_service\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*\"(?P<name>[^\"]+)\""
     create_service_string = "create_service"
-    create_service_regex_var = r'create_service\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*"(?P<var_name>[^"]+)"'
+    create_service_regex_var = r"create_service\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*\"(?P<var_name>[^\"]+)\""
 
     # Catches expressions of the type create_server<A>(..., "B")
     # being A the type being catched, and B the name of the server
     # Have to change !@!!!@!
     create_action_regex = r"create_server\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*[^,]+,\s*\"(?P<name>[^\"]+)\""
     create_action_string = "create_server"
-    create_action_regex_var = r'create_server\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*[^,]+,\s*"(?P<var_name>[^"]+)"'
+    create_action_regex_var = r"create_server\s*<\s*(?P<type>[^>]+)\s*>\s*\(\s*[^,]+,\s*\"(?P<var_name>[^\"]+)\""
 
     if create_subscription_string in code_line:
         instance = re.search(create_subscription_regex, code_line)
         if instance:
             return (0, {"com_name": instance.group("name"), "com_type": instance.group("type")})
-        
+        instance = re.search(create_subscription_regex_var, code_all)
+        name = get_add_declare_find_name(instance.group("var_name"), code_all)
+        return (0, {"com_name": name, "com_type": instance.group("type")})
+
     elif create_service_string in code_line:
         instance = re.search(create_service_regex, code_line)
         if instance:
             return (1, {"com_name": instance.group("name"), "com_type": instance.group("type")})
+        instance = re.search(create_service_regex_var, code_all)
+
     elif create_action_string in code_line:
         instance = re.search(create_action_regex, code_line)
         if instance:
             return (2, {"com_name": instance.group("name"), "com_type": instance.group("type")})
+        instance = re.search(create_action_regex_var, code_all)
+
     else :
         return False
 
