@@ -480,7 +480,7 @@ def find_sub_srv_act_with_regex(code_line: str, code_all: str) -> tuple:
         instance = re.search(create_subscription_regex, code_line)
         if instance:
             return (0, {"com_name": instance.group("name"), "com_type": instance.group("type")})
-        instance = re.search(create_subscription_regex_var, code_all)
+        instance = re.search(create_subscription_regex_var, code_line)
         name = get_add_declare_find_name(instance.group("var_name"), code_all)
         return (0, {"com_name": name, "com_type": instance.group("type")})
 
@@ -488,13 +488,17 @@ def find_sub_srv_act_with_regex(code_line: str, code_all: str) -> tuple:
         instance = re.search(create_service_regex, code_line)
         if instance:
             return (1, {"com_name": instance.group("name"), "com_type": instance.group("type")})
-        instance = re.search(create_service_regex_var, code_all)
+        instance = re.search(create_service_regex_var, code_line)
+        name = get_add_declare_find_name(instance.group("var_name"), code_all)
+        return (0, {"com_name": name, "com_type": instance.group("type")})
 
     elif create_action_string in code_line:
         instance = re.search(create_action_regex, code_line)
         if instance:
             return (2, {"com_name": instance.group("name"), "com_type": instance.group("type")})
-        instance = re.search(create_action_regex_var, code_all)
+        instance = re.search(create_action_regex_var, code_line)
+        name = get_add_declare_find_name(instance.group("var_name"), code_all)
+        return (0, {"com_name": name, "com_type": instance.group("type")})
 
     else :
         return False
@@ -504,3 +508,4 @@ def map_type_to_headers_file(type: str) -> str:
         if type in mapping[_HD]:
             return mapping[_HD]["__LOCATION"] + mapping[_HD][type] + ".hpp"
     return "TODO"
+
