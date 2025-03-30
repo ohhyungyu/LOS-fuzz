@@ -381,7 +381,7 @@ def find_yaml_components(rootDir: str, overwrite: bool) -> None:
             contents = contents[contents.find(';')+1: ]
 
             instance = find_sub_srv_act_with_regex(content_line, backup_content)
-            if type(instance) == tuple:
+            if type(instance) == tuple and instance[1]["com_name"]:
                 logging.debug(f"Found instance at {filepath}")
 
                 com_name = instance[1]["com_name"]
@@ -481,24 +481,27 @@ def find_sub_srv_act_with_regex(code_line: str, code_all: str) -> tuple:
         if instance:
             return (0, {"com_name": instance.group("name"), "com_type": instance.group("type")})
         instance = re.search(create_subscription_regex_var, code_line)
-        name = get_add_declare_find_name(instance.group("var_name"), code_all)
-        return (0, {"com_name": name, "com_type": instance.group("type")})
+        if instance:
+            name = get_add_declare_find_name(instance.group("var_name"), code_all)
+            return (0, {"com_name": name, "com_type": instance.group("type")})
 
     elif create_service_string in code_line:
         instance = re.search(create_service_regex, code_line)
         if instance:
             return (1, {"com_name": instance.group("name"), "com_type": instance.group("type")})
         instance = re.search(create_service_regex_var, code_line)
-        name = get_add_declare_find_name(instance.group("var_name"), code_all)
-        return (0, {"com_name": name, "com_type": instance.group("type")})
+        if instance:
+            name = get_add_declare_find_name(instance.group("var_name"), code_all)
+            return (0, {"com_name": name, "com_type": instance.group("type")})
 
     elif create_action_string in code_line:
         instance = re.search(create_action_regex, code_line)
         if instance:
             return (2, {"com_name": instance.group("name"), "com_type": instance.group("type")})
         instance = re.search(create_action_regex_var, code_line)
-        name = get_add_declare_find_name(instance.group("var_name"), code_all)
-        return (0, {"com_name": name, "com_type": instance.group("type")})
+        if instance:
+            name = get_add_declare_find_name(instance.group("var_name"), code_all)
+            return (0, {"com_name": name, "com_type": instance.group("type")})
 
     else :
         return False
