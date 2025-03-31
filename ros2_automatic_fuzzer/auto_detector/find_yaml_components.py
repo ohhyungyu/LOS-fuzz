@@ -392,9 +392,8 @@ def find_yaml_components(rootDir: str, overwrite: bool) -> None:
                     logging.warning(f"The `{type_com}` type may be incomplete")
                 name_pkg = find_package_name(filepath)
                 if not name_pkg in yaml_result:
-                    yaml_result[name_pkg] = {"topics": {}, "services": {}, "actions":{}}
-                else :
                     logging.info(f"Now loading The Package: {name_pkg}")
+                    yaml_result[name_pkg] = {"topics": {}, "services": {}, "actions":{}}
 
                 yaml_result[name_pkg][found_things[instance[0]]].update({
                     name_com: {
