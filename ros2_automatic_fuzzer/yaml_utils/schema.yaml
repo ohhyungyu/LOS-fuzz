@@ -1,6 +1,6 @@
 map:
   patternProperties:
-    ".*":  # 패키지 이름 (예: nav2_costmap_2d 등)
+    ".*":
       type: map
       mapping:
         topics:
@@ -9,26 +9,30 @@ map:
           map(include('service'), required=False, none=False)
         actions:
           map(include('action'), required=False, none=False)
-
 ---
-
 topic:
-  headers_file: str(none=False)
-  node_name: str(none=False, required=False)
-  parameters: list(map(str(), num()))
-  source: str(none=False)
-  type: str(none=False)
+  regex(".*"):
+    type: map
+    mapping:
+      headers_file: str(none=False)
+      parameters: list(map(str(), num()))
+      source: str(none=False)
+      type: str(none=False)
 
 service:
-  headers_file: str(none=False)
-  node_name: str(none=False, required=False)
-  parameters: list(map(str(), num()))
-  source: str(none=False)
-  type: str(none=False)
+  regex(".*"):
+    type: map
+    mapping:
+      headers_file: str(none=False)
+      parameters: list(map(str(), num()))
+      source: str(none=False)
+      type: str(none=False)
 
 action:
-  headers_file: str(none=False)
-  node_name: str(none=False, required=False)
-  parameters: list(map(str(), num()))
-  source: str(none=False)
-  type: str(none=False)
+  regex(".*"):
+    type: map
+    mapping:
+      headers_file: str(none=False)
+      parameters: list(map(str(), num()))
+      source: str(none=False)
+      type: str(none=False)
