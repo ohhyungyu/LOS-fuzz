@@ -394,33 +394,28 @@ def find_yaml_components(rootDir: str, overwrite: bool) -> None:
                 if not name_pkg in yaml_result:
                     yaml_result[name_pkg] = {"topics": {}, "services": {}, "actions":{}}
 
-                yaml_result[name_pkg][found_things[instance[0]]].update(
+                yaml_result[name_pkg][found_things[instance[0]]].update({
                     name_com: {
                         "headers_file": map_type_to_headers_file(type_com),
                         "source": os.path.relpath(filepath, start=rootDir),
                         "type": type_com,
                         "parameters": [],
                     }
-                )
+                })
 
-    '''
-    # Generate results
-    if found_subscription:
-        yaml_result["topics"] = found_subscription
+    
+    for key in yaml_result.keys():
+        for thing in found_things:
+            if len(yaml_result[key][thing]) == 0:
+                del(yaml_result[key][thing])
 
-    if found_services:
-        yaml_result["services"] = found_services
-
-    if found_actions:
-        yaml_result["actions"] = found_actions
-
-    if len(found_subscription) + len(found_services) + len(found_actions) == 0:
+    if len(yaml_result) == 0:
         logging.error(
             "No component has been found\n"
             "Are you in (or have you provided) the correct path?"
         )
         exit(-1)
-    '''
+    
 
     if os.path.exists(yaml_path) and overwrite:
         logging.warning("Overwriting the fuzz.yaml file")
