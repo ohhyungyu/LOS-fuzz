@@ -57,7 +57,7 @@ def ask_for_components(name_pkg: str, services: dict, topics: dict, actions: dic
     questions = [
         {
             "type": "checkbox",
-            "message": f"What would you like to fuzz from the \"{name_pkg}\" package?",
+            "message": f"What would you like to fuzz from the \"{name_pkg}\" package?\n",
             "name": "to_fuzz_components",
             "choices": choices,
         }
