@@ -49,5 +49,5 @@ def detect_parameters(rootDir: str):
 
 
 def ask_detect_parameters(rootDir: str):
-    if ("Do you want to autodetect parameters?", False):
+    if yes_no_question("Do you want to autodetect parameters?", False):
         detect_parameters(rootDir)
