@@ -1,15 +1,25 @@
-services: map(include('service'), required=False, none=False)
-topics: map(include('topic'), required=False, none=False)
-actions: map(include('action'), required=False, none=False)
+map:
+  patternProperties:
+    ".*":  # 패키지 이름 (예: nav2_costmap_2d 등)
+      type: map
+      mapping:
+        topics:
+          map(include('topic'), required=False, none=False)
+        services:
+          map(include('service'), required=False, none=False)
+        actions:
+          map(include('action'), required=False, none=False)
+
 ---
-service:
+
+topic:
   headers_file: str(none=False)
   node_name: str(none=False, required=False)
   parameters: list(map(str(), num()))
   source: str(none=False)
   type: str(none=False)
 
-topic:
+service:
   headers_file: str(none=False)
   node_name: str(none=False, required=False)
   parameters: list(map(str(), num()))

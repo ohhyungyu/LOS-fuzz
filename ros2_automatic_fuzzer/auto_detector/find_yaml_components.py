@@ -359,7 +359,8 @@ def find_yaml_components(rootDir: str, overwrite: bool) -> None:
     found_services = dict()
     found_actions = dict()
 
-    found_things = (found_subscription, found_services, found_actions)
+    found_things = ("topics", "services", "actions")
+    yaml_result = {}
 
     for filepath in cppfiles:
         contents = ""
@@ -384,21 +385,26 @@ def find_yaml_components(rootDir: str, overwrite: bool) -> None:
             if type(instance) == tuple and instance[1]["com_name"]:
                 logging.debug(f"Found instance at {filepath}")
 
-                com_name = instance[1]["com_name"]
-                com_type = instance[1]["com_type"]
+                name_com = instance[1]["com_name"]
+                type_com = instance[1]["com_type"]
 
-                if "::" not in com_type:
-                    logging.warning(f"The `{com_type}` type may be incomplete")
+                if "::" not in type_com:
+                    logging.warning(f"The `{type_com}` type may be incomplete")
+                name_pkg = find_package_name(filepath)
+                if not name_pkg in yaml_result:
+                    yaml_result[name_pkg] = {"topics": {}, "services": {}, "actions":{}}
 
-                found_things[instance[0]][com_name] = {
-                    "headers_file": map_type_to_headers_file(com_type),
-                    "source": os.path.relpath(filepath, start=rootDir),
-                    "type": com_type,
-                    "parameters": [],
-                }
+                yaml_result[name_pkg][found_things[instance[0]]].update(
+                    name_com: {
+                        "headers_file": map_type_to_headers_file(type_com),
+                        "source": os.path.relpath(filepath, start=rootDir),
+                        "type": type_com,
+                        "parameters": [],
+                    }
+                )
 
+    '''
     # Generate results
-    yaml_result = {}
     if found_subscription:
         yaml_result["topics"] = found_subscription
 
@@ -414,6 +420,7 @@ def find_yaml_components(rootDir: str, overwrite: bool) -> None:
             "Are you in (or have you provided) the correct path?"
         )
         exit(-1)
+    '''
 
     if os.path.exists(yaml_path) and overwrite:
         logging.warning("Overwriting the fuzz.yaml file")
@@ -426,7 +433,13 @@ def find_yaml_components(rootDir: str, overwrite: bool) -> None:
 
 # Need to make Sorter about package name 
 def find_package_name(filepath) -> str:
-    pass
+    name_pkg = filepath
+    for x in range(4):
+        name_pkg = name_pkg[name_pkg.find('/')+1: ]
+
+    name_pkg = name_pkg[: name_pkg.find('/')]
+    return name_pkg
+
 
 def get_add_declare_find_name(var_name: str, code_all: str):
     get_param_regex = rf"get_parameter\s*\(\s*\"(?P<param_name>[^\"]+)\"\s*,\s*{var_name}\s*\)"
