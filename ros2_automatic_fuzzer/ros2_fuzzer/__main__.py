@@ -41,7 +41,7 @@ def main():
         actions: dict = type_com["actions"] if "actions" in type_com else {}
 
         for (name, value) in ask_for_components(
-            services=services, topics=topics, actions=actions
+            name_pkg, services=services, topics=topics, actions=actions
         ):
             is_service = (name, value) in services.items()
             is_topic = (name, value) in topics.items()

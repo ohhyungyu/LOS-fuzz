@@ -28,7 +28,7 @@ def component_options(components: dict):
     ]
 
 
-def ask_for_components(services: dict, topics: dict, actions: dict):
+def ask_for_components(name_pkg: str, services: dict, topics: dict, actions: dict):
     services_choices = component_options(services)
     topics_choices = component_options(topics)
     actions_choices = component_options(actions)
@@ -43,22 +43,26 @@ def ask_for_components(services: dict, topics: dict, actions: dict):
         )
         exit(-1)
 
-    choices = [
-        Separator("Topics"),
-        *topics_choices,
-        Separator("Services"),
-        *services_choices,
-        Separator("Actions"),
-        *actions_choices,
-    ]
+    choices = []
+    if len(topics_choices) !=0:
+        choices.append(Separator("Topics"))
+        choices += topics_choices
+    if len(services_choices) !=0:
+        choices.append(Separator("Services"))
+        choices += services_choices
+    if len(actions_choices) !=0:
+        choices.append(Separator("Actions"))
+        choices += actions_choices
 
     questions = [
         {
             "type": "checkbox",
-            "message": "What do you want to fuzz?",
+            "message": f"What would you like to fuzz from the \"{name_pkg}\" package?",
             "name": "to_fuzz_components",
             "choices": choices,
         }
     ]
-
+    print("(<up>, <down> to move)\n"
+    "(<space> to select, <a> to toggle, <i> to invert)")
+    
     return prompt(questions)["to_fuzz_components"]
