@@ -22,7 +22,8 @@ def yes_no_question(message: str, default=True):
 
 def detect_parameters(rootDir: str):
     yaml_obj: dict = read_and_validate_yaml_file(rootDir)
-
+    pass # need to change To detect parameter in Source
+    '''
     services: dict = yaml_obj["services"]
     topics: dict = yaml_obj["topics"]
 
@@ -46,7 +47,7 @@ def detect_parameters(rootDir: str):
     with open(yaml_path, "w") as outfile:
         yaml.dump(yaml_obj, outfile, sort_keys=False)
         logging.info("The file `fuzz.yaml` has been overwritten")
-
+    '''
 
 def ask_detect_parameters(rootDir: str):
     if yes_no_question("Do you want to autodetect parameters?", False):
