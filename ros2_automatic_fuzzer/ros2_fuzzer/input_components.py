@@ -62,7 +62,5 @@ def ask_for_components(name_pkg: str, services: dict, topics: dict, actions: dic
             "choices": choices,
         }
     ]
-    print("(<up>, <down> to move)\n"
-    "(<space> to select, <a> to toggle, <i> to invert)")
     
     return prompt(questions)["to_fuzz_components"]

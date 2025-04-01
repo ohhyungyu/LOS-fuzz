@@ -35,6 +35,16 @@ def usage() -> str:
 def main():
     path = usage()
     yaml_obj: dict = read_and_validate_yaml_file(path)
+    
+    print(
+        "(\033[92m\033[4m\033[1m"+
+        "<up>, <down> to move"+
+        "\033[0m)   "+
+        "(\033[92m\033[4m\033[1m"+
+        "<space> to select, <a> to toggle, <i> to invert"
+        "\033[0m)"
+    )
+    
     for name_pkg, type_com in yaml_obj.items():
         services: dict = type_com["services"] if "services" in type_com else {}
         topics: dict = type_com["topics"] if "topics" in type_com else {}
