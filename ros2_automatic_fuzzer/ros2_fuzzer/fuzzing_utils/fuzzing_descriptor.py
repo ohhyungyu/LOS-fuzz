@@ -60,23 +60,46 @@ class FuzzTargetProcessor:
         fresh = self.get_fresh_variable()
         preindent = "    " * indent
         res = preindent + f"// {field.name}\n"
+        
+        DEFAULT = 10
 
         # Primitive type
         if field.type.is_primitive:
-            cpp_type = FuzzTargetProcessor.PRIMITIVES_CPP_TYPES[field.type.type_name]
-            res += preindent + f"{cpp_type} {fresh};\n"
-            res += (
-                preindent
-                + f"if (!get{field.type.type_name.capitalize()}({fresh})) timer_timeout();\n"
-            )
+            regex = r"[a-zA-Z_][\w/]*\[\s*(?P<array_size>\d+)?\s*\]"
+            is_array = re.search(regex, field.type.type_name)
+            if is_array: # Not bounded array size ex) float64[]
+                if is_array['array_size'] == None:
+                    array_size = DEFAULT
+                else: # bounded array size ex) float64[10]
+                    array_size = is_array['array_size']
+                primitive_type = field.type.type_name[
+                    0:
+                    field.type.type_name.find('[') ]
+                cpp_type = FuzzTargetProcessor.PRIMITIVES_CPP_TYPES[primitive_type]
+                res += preindent + f"std::array<{cpp_type}, {array_size}> {fresh};\n"
+                res += (
+                    preindent
+                    + f"for(int __i=0; __i<{array_size}; __i++) "
+                    + f"if (!get{primitive_type.capitalize()}({fresh})) timer_timeout();\n"
+                )
+            else: # Just variable
+                cpp_type = FuzzTargetProcessor.PRIMITIVES_CPP_TYPES[field.type.type_name]
+                res += preindent + f"{cpp_type} {fresh};\n"
+                res += (
+                    preindent
+                    + f"if (!get{field.type.type_name.capitalize()}({fresh})) timer_timeout();\n"
+                )
         # Composite type
         else:
+            if '/' in field.type.type_name:
+                field.type.type_name.replace('/', "::")
+
             res += preindent + f"{field.type.type_name} {fresh};\n"
             for subfield in field.type.fields:
                 res += preindent + self.fuzz_field(
                     subfield, parent=fresh, indent=indent + 1
                 )
-        res += preindent + f"{parent}->{field.name} = {fresh};\n"
+        res += preindent + f"{parent}.{field.name} = {fresh};\n"
         return res
 
     def process(

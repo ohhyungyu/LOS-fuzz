@@ -13,6 +13,11 @@ def generate_topic_template(source: str, ros_type_str: str, headers_file: str) -
     topic_name = ros_type_str.replace("::", "/")
     ros_type = TypeParser.parse_type(topic_name)
 
+
+    # ros_type -> ROSType
+    # headers_file -> ros_type_str Headerfile (.hpp)
+    # original_file -> main.cpp file
+    # ros_type_str -> std_msgs/msg/String.msg 
     fuzz_target = FuzzTargetProcessor().process(
         ros_type,
         headers_file=headers_file,
