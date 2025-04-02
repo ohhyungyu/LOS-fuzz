@@ -65,22 +65,18 @@ class FuzzTargetProcessor:
 
         # Primitive type
         if field.type.is_primitive:
-            regex = r"[a-zA-Z_][\w/]*\[\s*(?P<array_size>\d+)?\s*\]"
-            is_array = re.search(regex, field.type.type_name)
-            if is_array: # Not bounded array size ex) float64[]
-                if is_array['array_size'] == None:
+            if field.options.is_array: # Not bounded array size ex) float64[]
+                if not field.options.array_size:
                     array_size = DEFAULT
                 else: # bounded array size ex) float64[10]
-                    array_size = is_array['array_size']
-                primitive_type = field.type.type_name[
-                    0:
-                    field.type.type_name.find('[') ]
-                cpp_type = FuzzTargetProcessor.PRIMITIVES_CPP_TYPES[primitive_type]
+                    array_size = field.options.array_size
+
+                cpp_type = FuzzTargetProcessor.PRIMITIVES_CPP_TYPES[field.type.type_name]
                 res += preindent + f"std::array<{cpp_type}, {array_size}> {fresh};\n"
                 res += (
                     preindent
                     + f"for(int __i=0; __i<{array_size}; __i++) "
-                    + f"if (!get{primitive_type.capitalize()}({fresh})) timer_timeout();\n"
+                    + f"if (!get{field.type.type_name.capitalize()}({fresh})) timer_timeout();\n"
                 )
             else: # Just variable
                 cpp_type = FuzzTargetProcessor.PRIMITIVES_CPP_TYPES[field.type.type_name]
@@ -92,7 +88,7 @@ class FuzzTargetProcessor:
         # Composite type
         else:
             if '/' in field.type.type_name:
-                field.type.type_name.replace('/', "::")
+                field.type.type_name = field.type.type_name.replace('/', "::")
 
             res += preindent + f"{field.type.type_name} {fresh};\n"
             for subfield in field.type.fields:
