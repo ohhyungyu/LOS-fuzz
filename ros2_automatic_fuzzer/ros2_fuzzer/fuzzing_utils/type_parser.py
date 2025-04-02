@@ -29,7 +29,12 @@ class Field:
         self.options = options
 
     def __repr__(self) -> str:
-        return f"{self.name} : {self.type}"
+        if self.options.is_array and self.options.is_bounded_array_size:
+            return f"{self.name} : {self.type}[{self.options.array_size}]"
+        elif self.options.is_array:
+            return f"{self.name} : {self.type}[]"
+        else:
+            return f"{self.name} : {self.type}"
 
 
 class ROSType:
@@ -88,7 +93,7 @@ class TypeParser:
             int(g["stringMaxSize"]) if g["stringMaxSize"] is not None else None
         )
         array_size = int(g["arraySize"]) if g["arraySize"] is not None else None
-        is_bounded_array_size = g["boundedArraySize"] is not None
+        is_bounded_array_size = True if g["arraySize"] is not None else False
 
         options = FieldOptions(
             is_array=is_array,
@@ -142,5 +147,7 @@ class TypeParser:
 
         prepath, type_name = type_name.rsplit("/", 1)
         prepath += "/"
-
+        # EX) prepath : tutorial_interfaces/srv/
+        # EX) type_name : AddThreeInts
+    
         return TypeParser.parse(type_name=type_name, prepath=prepath)

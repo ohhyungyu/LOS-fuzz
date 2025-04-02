@@ -73,9 +73,6 @@ private:
 		// A crash happens if the parent id is different from the original one
 		// or simply if there is no PID running. Note that kill 0 doesn't send any signal!
 		if (getppid() != parent_pid_ || 0 != kill(parent_pid_, 0)) {
-			RCLCPP_INFO(this->get_logger(), "The node under test has crashed.\n"
-				"Last input `%s` may have produced a crash.\n"
-				"Stopping fuzzer.\n", input_.c_str() );
 			rclcpp::shutdown();
 			exit(EXIT_SUCCESS);
 		}
@@ -97,7 +94,6 @@ private:
 	rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
 	
 	pid_t parent_pid_;
-	std::string input_;
 };
 
 static void fuzz_target(int argc, char* argv[], pid_t parent_pid)
