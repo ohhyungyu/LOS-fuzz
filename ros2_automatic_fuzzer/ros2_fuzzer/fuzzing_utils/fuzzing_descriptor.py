@@ -100,7 +100,7 @@ class FuzzTargetProcessor:
         return res
 
     def process(
-        self, name: str, t: ROSType, headers_file: str, original_file: str, ros_type_str: str
+        self, t: ROSType, name: str, headers_file: str, original_file: str, ros_type_str: str
     ) -> FuzzTarget:
         logging.debug(f"Processing {t.type_name} type")
         imports = "\n".join(
