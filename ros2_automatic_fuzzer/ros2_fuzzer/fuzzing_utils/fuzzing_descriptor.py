@@ -20,7 +20,7 @@ class FuzzTarget:
             "IMPORTS": self.imports,
             "CLIENT_NAME": self.client_name,
             "REQUEST_CODE": self.request_code,
-            "NODE_TYPE": self.node_type,
+            "NODE_TYPE": self.node_type
         }
 
 

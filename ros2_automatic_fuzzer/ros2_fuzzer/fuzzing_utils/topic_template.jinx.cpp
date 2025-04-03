@@ -38,7 +38,7 @@ public:
 	: Node("fuzzer__publisher_"), parent_pid_(parent_pid)
 	{
 		RCLCPP_INFO(this->get_logger(), "Started publisher from fuzz_target");
-		publisher_ = this->create_publisher<std_msgs::msg::String>("{{ CLIENT_NAME }}", 10);
+		publisher_ = this->create_publisher<"{{ NODE_TYPE }}">("{{ CLIENT_NAME }}", 10);
 		timerTimeout_ = this->create_wall_timer(
 			10000ms, std::bind(&FuzzerPublisher::timer_timeout, this));
 		timer_ = this->create_wall_timer(
@@ -61,7 +61,7 @@ private:
 		detect_crash();
 
 		/* fuzzed topic instance as request*/
-		auto request; // NEED TO CHANGE
+		{{ NODE_TYPE }} request;
 
        {{ REQUEST_CODE }}
 
@@ -91,7 +91,7 @@ private:
 	// Private fields
 	rclcpp::TimerBase::SharedPtr timer_;
 	rclcpp::TimerBase::SharedPtr timerTimeout_;
-	rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+	rclcpp::Publisher<"{{ NODE_TYPE }}">::SharedPtr publisher_;
 	
 	pid_t parent_pid_;
 };
