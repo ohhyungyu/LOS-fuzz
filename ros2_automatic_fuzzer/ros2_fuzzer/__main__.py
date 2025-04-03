@@ -59,6 +59,7 @@ def main():
 
             if is_service:
                 destination_path = generate_service_template(
+                    service_name=name
                     source=value["source"],
                     ros_type_str=value["type"],
                     headers_file=value["headers_file"],
@@ -68,6 +69,7 @@ def main():
 
             elif is_topic:
                 destination_path = generate_topic_template(
+                    topic_name=name,
                     source=value["source"],
                     ros_type_str=value["type"],
                     headers_file=value["headers_file"],

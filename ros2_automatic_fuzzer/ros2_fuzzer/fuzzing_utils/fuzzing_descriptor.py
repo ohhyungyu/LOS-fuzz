@@ -51,10 +51,11 @@ class FuzzTargetProcessor:
         self.variable_counter += 1
         return fresh_variable
 
+    ''' Not Use!!!
     @staticmethod
     def normalize_client_name(raw_client_name: str) -> str:
         return re.sub(r"(?<!^)(?=[A-Z])", "_", raw_client_name).lower()
-
+    '''
     def fuzz_field(self, field: Field, parent="request", indent=1) -> str:
         logging.debug(f"Generating field {field.name}")
         fresh = self.get_fresh_variable()
@@ -99,7 +100,7 @@ class FuzzTargetProcessor:
         return res
 
     def process(
-        self, t: ROSType, headers_file: str, original_file: str, ros_type_str: str
+        self, name: str, t: ROSType, headers_file: str, original_file: str, ros_type_str: str
     ) -> FuzzTarget:
         logging.debug(f"Processing {t.type_name} type")
         imports = "\n".join(
@@ -108,11 +109,12 @@ class FuzzTargetProcessor:
                 f'#include "{original_file}"',
             ]
         )
+        
         request_code = "\n".join([self.fuzz_field(field) for field in t.fields])
 
         return FuzzTarget(
             imports=imports,
-            client_name=FuzzTargetProcessor.normalize_client_name(t.type_name),
+            client_name=name,
             request_code=request_code,
             node_type=ros_type_str,
         )
