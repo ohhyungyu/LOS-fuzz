@@ -10,8 +10,8 @@ from ros2_fuzzer.fuzzing_utils.generate_cpp_file import generate_cpp_file
 
 def generate_service_template(service_name: str, source: str, ros_type_str: str, headers_file: str) -> str:
     original_file = os.path.basename(source)
-    topic_name = ros_type_str.replace("::", "/")
-    ros_type = TypeParser.parse_type(topic_name)
+    service_type = ros_type_str.replace("::", "/")
+    ros_type = TypeParser.parse_type(service_type)
 
     fuzz_target = FuzzTargetProcessor().process(
         ros_type,

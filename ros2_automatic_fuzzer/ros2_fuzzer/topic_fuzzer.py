@@ -10,8 +10,8 @@ from ros2_fuzzer.fuzzing_utils.generate_cpp_file import generate_cpp_file
 
 def generate_topic_template(topic_name: str, source: str, ros_type_str: str, headers_file: str) -> str:
     original_file = os.path.basename(source)
-    topic_name = ros_type_str.replace("::", "/")
-    ros_type = TypeParser.parse_type(topic_name)
+    topic_type = ros_type_str.replace("::", "/")
+    ros_type = TypeParser.parse_type(topic_type)
 
 
     # ros_type -> ROSType
