@@ -27,10 +27,6 @@ using namespace std;
 
 {{ FUZZING_API }}
 
-/* 
-{{ REQUEST_CODE }}
-*/
-
 class FuzzerPublisher : public rclcpp::Node
 {
 public:
@@ -38,7 +34,7 @@ public:
 	: Node("fuzzer__publisher_"), parent_pid_(parent_pid)
 	{
 		RCLCPP_INFO(this->get_logger(), "Started publisher from fuzz_target");
-		publisher_ = this->create_publisher<"{{ NODE_TYPE }}">("{{ CLIENT_NAME }}", 10);
+		publisher_ = this->create_publisher<{{ NODE_TYPE }}>("{{ CLIENT_NAME }}", 10);
 		timerTimeout_ = this->create_wall_timer(
 			10000ms, std::bind(&FuzzerPublisher::timer_timeout, this));
 		timer_ = this->create_wall_timer(
@@ -91,7 +87,7 @@ private:
 	// Private fields
 	rclcpp::TimerBase::SharedPtr timer_;
 	rclcpp::TimerBase::SharedPtr timerTimeout_;
-	rclcpp::Publisher<"{{ NODE_TYPE }}">::SharedPtr publisher_;
+	rclcpp::Publisher<{{ NODE_TYPE }}>::SharedPtr publisher_;
 	
 	pid_t parent_pid_;
 };
