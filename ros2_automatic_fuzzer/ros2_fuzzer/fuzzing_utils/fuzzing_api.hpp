@@ -11,18 +11,18 @@ bool getFloat32(float& f);
 bool getFloat64(double& d);
 
 bool getInt8(int8_t& i);
-bool getUInt8(uint8_t& ui);
+bool getUint8(uint8_t& ui);
 
 bool getInt16(int16_t& i);
-bool getUInt16(uint16_t& ui);
+bool getUint16(uint16_t& ui);
 
 bool getInt32(int32_t& i);
-bool getUInt32(uint32_t& ui);
+bool getUint32(uint32_t& ui);
 
 bool getInt64(int64_t& i);
-bool getUInt64(uint64_t& ui);
+bool getUint64(uint64_t& ui);
 
-bool getString(std::string& s, uint8_t size);
+bool getString(std::string& s, uint8_t size=5);
 
 /* Implementation */
 bool getBool(bool& b)
@@ -78,7 +78,7 @@ bool getInt8(int8_t& i)
     return (c != EOF);
 }
 
-bool getUInt8(uint8_t& ui)
+bool getUint8(uint8_t& ui)
 {
     return getInt8((int8_t& )ui);
 }
@@ -94,7 +94,7 @@ bool getInt16(int16_t& i) {
     return true;
 }
 
-bool getUInt16(uint16_t& ui) {
+bool getUint16(uint16_t& ui) {
     return getInt16((int16_t&) ui);
 }
 
@@ -109,7 +109,7 @@ bool getInt32(int32_t& i) {
     return true;
 }
 
-bool getUInt32(uint32_t& ui) {
+bool getUint32(uint32_t& ui) {
     return getInt32((int32_t&) ui);
 }
 
@@ -125,12 +125,12 @@ bool getInt64(int64_t& i)
     return true;
 }
 
-bool getUInt64(uint64_t& ui)
+bool getUint64(uint64_t& ui)
 {
     return getInt64((int64_t&) ui);
 }
 
-bool getString(std::string& s, uint8_t size)
+bool getString(std::string& s, uint8_t size=5)
 {
     s = "";
     for (size_t i = 0; i < size; ++i)
