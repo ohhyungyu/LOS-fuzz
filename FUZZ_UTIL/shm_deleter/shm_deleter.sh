@@ -12,5 +12,3 @@ do
         rm -rf $file_dir/$file_name$i$j*
     done
 done
-
-rm -rf $file_dir/*
