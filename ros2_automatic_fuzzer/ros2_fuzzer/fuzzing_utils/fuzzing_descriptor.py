@@ -8,19 +8,22 @@ from .type_parser import Field, ROSType
 
 class FuzzTarget:
     def __init__(
-        self, imports: str, client_name: str, request_code: str, node_type: str
+        self, client_name: str, request_code: str, 
+        node_type: str, node_name: str, fuzz_name: str
     ) -> None:
-        self.imports = imports
         self.client_name = client_name
         self.request_code = request_code
         self.node_type = node_type
+        self.node_name = node_name
+        self.fuzz_name = fuzz_name
 
     def get_mapping(self) -> dict[str, str]:
         return {
-            "IMPORTS": self.imports,
             "CLIENT_NAME": self.client_name,
             "REQUEST_CODE": self.request_code,
-            "NODE_TYPE": self.node_type
+            "NODE_TYPE": self.node_type,
+            "FUZZ_NAME": self.fuzz_name,
+            "NODE_NAME": self.node_name
         }
 
 
@@ -100,8 +103,11 @@ class FuzzTargetProcessor:
         return res
 
     def process(
-        self, t: ROSType, name: str, headers_file: str, original_file: str, ros_type_str: str
-    ) -> FuzzTarget:
+        self, t: ROSType, name: str, headers_file: str, original_file: str, ros_type_str: str, count: int
+    )->tuple:
+        '''
+        return (FuzzTarget, imports)
+        '''
         logging.debug(f"Processing {t.type_name} type")
         imports = "\n".join(
             [
@@ -112,9 +118,13 @@ class FuzzTargetProcessor:
         
         request_code = "\n".join([self.fuzz_field(field) for field in t.fields])
 
-        return FuzzTarget(
-            imports=imports,
+        return (
+            FuzzTarget(
             client_name=name,
             request_code=request_code,
             node_type=ros_type_str,
+            node_name=f"automatic_fuzzer_{count}",
+            fuzz_name=f"fuzz_target_{count}",
+        ),
+        imports
         )

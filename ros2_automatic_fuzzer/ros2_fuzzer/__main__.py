@@ -11,6 +11,7 @@ from yaml_utils.yaml_utils import read_and_validate_yaml_file
 from .input_components import ask_for_components
 from .service_fuzzer import generate_service_template
 from .topic_fuzzer import generate_topic_template
+from .fuzzing_utils.generate_cpp_file import generate_cpp_file
 
 
 def usage() -> str:
@@ -50,6 +51,11 @@ def main():
         topics: dict = type_com["topics"] if "topics" in type_com else {}
         actions: dict = type_com["actions"] if "actions" in type_com else {}
 
+        count = 0
+        request_codes = list()
+        importes = list()
+        source_file = ""
+
         for (name, value) in ask_for_components(
             name_pkg, services=services, topics=topics, actions=actions
         ):
@@ -57,29 +63,50 @@ def main():
             is_topic = (name, value) in topics.items()
             is_action = (name, value) in actions.items()
 
+            if not source_file:
+                source_file = value["source"]
+
             if is_service:
-                destination_path = generate_service_template(
+                count += 1
+                tmp = generate_service_template(
                     service_name=name,
                     source=value["source"],
                     ros_type_str=value["type"],
                     headers_file=value["headers_file"],
+                    count=count
                 )
+                request_codes.append(tmp[0])
+                importes.append(tmp[1])
+
                 logging.info(f"{name}: created fuzzer for the service")
-                logging.info(f"└── {destination_path}")
 
             elif is_topic:
-                destination_path = generate_topic_template(
+                count += 1
+                tmp = generate_topic_template(
                     topic_name=name,
                     source=value["source"],
                     ros_type_str=value["type"],
                     headers_file=value["headers_file"],
+                    count=count
                 )
+                request_codes.append(tmp[0])
+                importes.append(tmp[1])
+
                 logging.info(f"{name}: created fuzzer for the topic")
-                logging.info(f"└── {destination_path}")
 
             elif is_action:
+                count += 1
                 # TODO
                 pass
+
+        request_all_code = '\n'.join(request_codes)
+        all_imports = '\n'.join(importes)
+        generate_cpp_file(
+            source_file=source_file, 
+            template_name="fuzzing_templete/fuzzer_API_RESULT.jinx.cpp",
+            request_codes=request_all_code,
+            importes=all_imports
+            )
 
     logging.info("Fuzzer(s) generated successfully")
     logging.warning("Please link the fuzzers to their CMakeLists.txt files,")
