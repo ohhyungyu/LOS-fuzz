@@ -130,7 +130,7 @@ bool getUint64(uint64_t& ui)
     return getInt64((int64_t&) ui);
 }
 
-bool getString(std::string& s, uint8_t size=5)
+bool getString(std::string& s, uint8_t size)
 {
     s = "";
     for (size_t i = 0; i < size; ++i)

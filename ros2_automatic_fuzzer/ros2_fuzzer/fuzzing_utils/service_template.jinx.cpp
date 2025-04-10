@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 #include <unistd.h>
+#include <signal.h>
 #include <bits/signum.h>
 
 #include "rclcpp/rclcpp.hpp"
