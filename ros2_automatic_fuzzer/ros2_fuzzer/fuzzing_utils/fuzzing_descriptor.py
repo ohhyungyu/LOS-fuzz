@@ -80,14 +80,14 @@ class FuzzTargetProcessor:
                 res += (
                     preindent
                     + f"for(int __i=0; __i<{array_size}; __i++) "
-                    + f"if (!get{field.type.type_name.capitalize()}({fresh}[__i])) timer_timeout();\n"
+                    + f"if (!get{field.type.type_name.capitalize()}({fresh}[__i])) kill_parent_pid();\n"
                 )
             else: # Just variable
                 cpp_type = FuzzTargetProcessor.PRIMITIVES_CPP_TYPES[field.type.type_name]
                 res += preindent + f"{cpp_type} {fresh};\n"
                 res += (
                     preindent
-                    + f"if (!get{field.type.type_name.capitalize()}({fresh})) timer_timeout();\n"
+                    + f"if (!get{field.type.type_name.capitalize()}({fresh})) kill_parent_pid();\n"
                 )
         # Composite type
         else:

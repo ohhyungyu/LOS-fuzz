@@ -13,8 +13,9 @@
 #include <unistd.h>
 
 #include "rclcpp/rclcpp.hpp"
-
 #include "rclcpp_action/rclcpp_action.hpp"
+
+pid_t parent_pid=0;
 
 
 {{ IMPORTES }}
@@ -22,10 +23,10 @@
 {{ FUZZING_API }}
 
 
-static void kill_pid(const pid_t& pid)
+static void kill_parent_pid()
 {
     std::cout << "Because of Something Error Killing parent." << std::endl;
-    kill(pid, SIGRTMAX);
+    kill(parent_pid , SIGRTMAX);
     rclcpp::shutdown();
     exit(EXIT_SUCCESS);
 }
@@ -44,7 +45,7 @@ static void treat_timeout_signal(int signum)
 
 int main(int argc_fuzz, char *argv_fuzz[])
 {
-	pid_t parent_pid = getpid();
+	parent_pid = getpid();
 	pid_t pid = fork();
 
 	if (pid < 0) {
@@ -52,7 +53,7 @@ int main(int argc_fuzz, char *argv_fuzz[])
 		exit(EXIT_FAILURE);
 	} else if (pid == 0) {
         // ------------------------- Have to Change
-		fuzz_target(argc_fuzz, argv_fuzz, parent_pid);
+		fuzz_target(argc_fuzz, argv_fuzz);
 		exit(EXIT_FAILURE);
 	}
 
