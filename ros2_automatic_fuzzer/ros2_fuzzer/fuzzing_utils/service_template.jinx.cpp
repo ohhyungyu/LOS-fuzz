@@ -27,7 +27,7 @@ void fuzz_target(int argc, char const *const argv[])
     rclcpp::init(argc, argv);
 
     // Create node
-    std::shared_ptr<rclcpp::Node> node = rclcpp::Node::make_shared("automatic_client");
+    auto node = rclcpp::Node::make_shared("{{ NODE_NAME }}");
 
     rclcpp::Client<{{ NODE_TYPE }}>::SharedPtr client =
         node->create_client<{{ NODE_TYPE }}>("{{ CLIENT_NAME }}");
@@ -38,7 +38,7 @@ void fuzz_target(int argc, char const *const argv[])
 
 {{ REQUEST_CODE }}
 
-    while (!client->wait_for_service(1s)) {
+    while (!client->wait_for_service(std::chrono::milliseconds(500))) {
         if (!rclcpp::ok()) {
             RCLCPP_ERROR(rclcpp::get_logger("automatic_fuzzing_logger"), "Interrupted while waiting for the service. Exiting.");
             return;
