@@ -1,135 +1,16 @@
-/*
- * This is an automatically generated file. Do not modify.
- * 
- * This file contains the ros2_automatic_fuzzer implementation
- * for the `{{ FILE_NAME }}` publisher source file.
- */
-#include <iostream>
+void {{ FUZZ_NAME }}(int argc, char *argv[]) {
+    rclcpp::init(argc, argv);
 
-#include <string>
-#include <istream>
-#include <ostream>
-#include <iterator>
-#include <chrono>
-#include <functional>
-#include <memory>
-#include <unistd.h>
-#include <signal.h>
-#include <bits/signum.h>
+    auto node = rclcpp::Node::make_shared("{{ NODE_NAME }}");
 
-#include "rclcpp/rclcpp.hpp"
+    auto publisher = node->create_publisher<{{ NODE_TYPE }}>(
+    "{{ CLIENT_NAME }}", 10);
 
-using namespace std::chrono_literals;
-using std::placeholders::_1;
-using namespace std;
+    {{ NODE_TYPE }} request;
 
-{{ IMPORTS }}
+{{ REQUEST_CODE }}
 
-{{ FUZZING_API }}
-
-class FuzzerPublisher : public rclcpp::Node
-{
-public:
-	FuzzerPublisher(int parent_pid)
-	: Node("fuzzer__publisher_"), parent_pid_(parent_pid)
-	{
-		RCLCPP_INFO(this->get_logger(), "Started publisher from fuzz_target");
-		publisher_ = this->create_publisher<{{ NODE_TYPE }}>("{{ CLIENT_NAME }}", 10);
-		timerTimeout_ = this->create_wall_timer(
-			10000ms, std::bind(&FuzzerPublisher::timer_timeout, this));
-		timer_ = this->create_wall_timer(
-			1ms, std::bind(&FuzzerPublisher::timer_callback, this));
-	}
-
-private:
-
-	// Kill parent and ourselves if time is up 
-	void timer_timeout()
-	{
-		RCLCPP_INFO(this->get_logger(), "Time is up. Good job! Killing parent.");
-		kill(parent_pid_, SIGRTMAX);
-		rclcpp::shutdown();
-		exit(EXIT_SUCCESS);
-	} 
-
-	void timer_callback()
-	{
-		detect_crash();
-
-		/* fuzzed topic instance as request*/
-		{{ NODE_TYPE }} request;
-
-       {{ REQUEST_CODE }}
-
-		publisher_->publish(request);
-	}
-
-	void detect_crash()
-	{
-		// A crash happens if the parent id is different from the original one
-		// or simply if there is no PID running. Note that kill 0 doesn't send any signal!
-		if (getppid() != parent_pid_ || 0 != kill(parent_pid_, 0)) {
-			rclcpp::shutdown();
-			exit(EXIT_SUCCESS);
-		}
-	}
- 
-	static std::string get_all_input()
-	{
-	  std::cin >> std::noskipws;
-	  std::istream_iterator<char> it(std::cin);
-	  std::istream_iterator<char> end;
-	  std::string results(it, end);
-	  results.pop_back();
-	  return results;
-	}
-
-	// Private fields
-	rclcpp::TimerBase::SharedPtr timer_;
-	rclcpp::TimerBase::SharedPtr timerTimeout_;
-	rclcpp::Publisher<{{ NODE_TYPE }}>::SharedPtr publisher_;
-	
-	pid_t parent_pid_;
-};
-
-static void fuzz_target(int argc, char* argv[], pid_t parent_pid)
-{
-	std::cout << "Fuzzer started" << std::endl;
-	rclcpp::init(argc, argv);
-	rclcpp::spin(std::make_shared<FuzzerPublisher>(parent_pid));
-	rclcpp::shutdown();
-}
-
-
-static void treat_timeout_signal(int signum)
-{
-	if (signum == SIGRTMAX) {
-		std::cout << "It is time to finish!" << std::endl;
-		rclcpp::shutdown();
-		exit(EXIT_SUCCESS);
-	}
-}
-
-int main(int argc_fuzz, char *argv_fuzz[])
-{
-	pid_t parent_pid = getpid();
-	pid_t pid = fork();
-
-	if (pid < 0) {
-		std::cout << "Something crashed" << std::endl;
-		exit(EXIT_FAILURE);
-	} else if (pid == 0) {
-		fuzz_target(argc_fuzz, argv_fuzz, parent_pid);
-		exit(EXIT_FAILURE);
-	}
-
-	// Parent's code
-	signal(SIGRTMAX, treat_timeout_signal);
-
-	// Close standard input in the node
-	close(0);
-
-	// Continue normal system under test code
-	std::cout << "Continuing normal code" << std::endl;
-	PREVIOUS_main(argc_fuzz, argv_fuzz);
+    publisher->publish(request);
+    rclcpp::shutdown();
+    return ;
 }

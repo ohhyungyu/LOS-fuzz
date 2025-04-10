@@ -57,7 +57,7 @@ def generate_cpp_file(source_file: str, template_name: str, request_codes: str, 
 
     # Write the populated file
     full_path = os.path.join(
-        os.path.dirname(source_file), + "GENERATED_main.cpp"
+        os.path.dirname(source_file), "GENERATED_main.cpp"
     )
     try:
         with open(full_path, "w") as fd:

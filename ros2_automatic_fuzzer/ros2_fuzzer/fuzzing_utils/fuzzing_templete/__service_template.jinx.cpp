@@ -1,35 +1,10 @@
-/*
- * This is an automatically generated file. Do not modify.
- * 
- * This file contains the ros2_automatic_fuzzer implementation
- * for the `{{ FILE_NAME }}` server source file.
- */
-#include <cstdint>
-#include <cstdlib>
-#include <chrono>
-#include <cstdlib>
-#include <memory>
-#include <string>
-#include <unistd.h>
-#include <signal.h>
-#include <bits/signum.h>
-
-#include "rclcpp/rclcpp.hpp"
-
-using namespace std::chrono_literals;
-
-{{ IMPORTS }}
-
-{{ FUZZING_API }}
-
-void fuzz_target(int argc, char const *const argv[])
-{
+void {{ FUZZ_NAME }}(int argc, char const *const argv[]) {
     rclcpp::init(argc, argv);
 
     // Create node
     auto node = rclcpp::Node::make_shared("{{ NODE_NAME }}");
 
-    rclcpp::Client<{{ NODE_TYPE }}>::SharedPtr client =
+    rclcpp::Client<{{ NODE_TYPE }}>::SharedPtr client = 
         node->create_client<{{ NODE_TYPE }}>("{{ CLIENT_NAME }}");
 
     auto request = std::make_shared<{{ NODE_TYPE }}::Request>();
@@ -58,48 +33,5 @@ void fuzz_target(int argc, char const *const argv[])
     /* FINISH SINGLE ITERATION */
 
     rclcpp::shutdown();
-}
-
-static void kill_pid(const pid_t& pid)
-{
-    std::cout << "Time is up. Good job! Killing parent." << std::endl;
-    kill(pid, SIGRTMAX);
-    rclcpp::shutdown();
-    exit(EXIT_SUCCESS);
-}
-
-static void treat_timeout_signal(int signum)
-{
-    if (signum == SIGRTMAX) {
-        std::cout << "It is time to finish!" << std::endl;
-        rclcpp::shutdown();
-        exit(EXIT_SUCCESS);
-    }
-}
-
-int main(int argc_fuzz, char *argv_fuzz)
-{
-    pid_t parent_pid = getpid();
-    pid_t pid = fork();
-
-    if (pid < 0) {
-        std::cerr << "Could not fork!" << std::endl;
-        exit(-1);
-    } else if (pid == 0) {
-        fuzz_target(argc_fuzz, argv_fuzz);
-
-        // Kill the parent
-        std::cout << "Killing the parent" << std::endl;
-        kill_pid(parent_pid);
-        exit(0);
-    }
-    // Parent's code
-    signal(SIGRTMAX, treat_timeout_signal);
-
-    // Close standard input in the node
-    close(0);
-
-    // Continue normal system under test code
-    std::cout << "Continuing normal code" << std::endl;
-    PREVIOUS_main(argc_fuzz, argv_fuzz);
+    return ;
 }
