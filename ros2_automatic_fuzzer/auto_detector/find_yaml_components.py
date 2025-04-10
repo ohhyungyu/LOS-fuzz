@@ -4,6 +4,22 @@ import re
 import yaml
 
 mapping = {
+    "test_msgs": {
+        "__LOCATION": "test_msgs/action/",
+        "test_msgs::action::Fibonacci": "fibonacci",
+        "test_msgs::action::NestedMessage": "nested_message"
+    },
+    "nav2_msgs": {
+        "__LOCATION": "nav2_msgs/action/",
+        "nav2_msgs::action::ComputePathToPose": "compute_path_to_pose",
+        "nav2_msgs::action::FollowWaypoints": "follow_waypoints",
+        "nav2_msgs::action::Wait": "wait",
+        "nav2_msgs::action::Spin": "spin",
+        "nav2_msgs::action::FollowPath": "follow_path",
+        "nav2_msgs::action::NavigateToPose": "navigate_to_pose",
+        "nav2_msgs::action::BackUp": "back_up",
+        "nav2_msgs::action::DummyRecovery": "dummy_recovery"
+    },
     "unique_identifier_msgs": {
         "__LOCATION": "unique_identifier_msgs/msg/",
         "unique_identifier_msgs::msg::UUID": "uuid"
@@ -45,13 +61,16 @@ mapping = {
     },
     "tf2_msgs_srv": {
         "__LOCATION": "tf2_msgs/srv/",
-        "tf2_msgs::srv::FrameGraph_Request": "frame_graph",
-        "tf2_msgs::srv::FrameGraph_Response": "frame_graph"
+        "tf2_msgs::srv::FrameGraph": "frame_graph",
     },
     "tf2_msgs_msg": {
         "__LOCATION": "tf2_msgs/msg/",
         "tf2_msgs::msg::TFMessage": "tf_message",
         "tf2_msgs::msg::TF2Error": "tf2_error"
+    },
+    "tf2_msgs_action": {
+        "__LOCATION": "tf2_msgs/action/",
+        "tf2_msgs::action::LookupTransform": "lookup_transform"
     },
     "trajectory_msgs" : {
         "__LOCATION": "trajectory_msgs/msg/",
@@ -69,8 +88,7 @@ mapping = {
     },
     "action_msgs_srv": {
         "__LOCATION": "action_msgs/srv/",
-        "action_msgs::srv::CancelGoal_Response": "cancel_goal",
-        "action_msgs::srv::CancelGoal_Request": "cancel_goal"
+        "action_msgs::srv::CancelGoal": "cancel_goal",
     },
     "action_msgs_msg": {
         "__LOCATION": "action_msgs/msg/",
@@ -80,28 +98,20 @@ mapping = {
     },
     "std_srvs": {
         "__LOCATION": "std_srvs/srv/",
-        "std_srvs::srv::Empty_Request": "empty",
-        "std_srvs::srv::Empty_Response": "empty",
-        "std_srvs::srv::SetBool_Response": "set_bool",
-        "std_srvs::srv::SetBool_Request": "set_bool",
-        "std_srvs::srv::Trigger_Response": "trigger",
-        "std_srvs::srv::Trigger_Request": "trigger"
+        "std_srvs::srv::Empty": "empty",
+        "std_srvs::srv::SetBool": "set_bool",
+        "std_srvs::srv::Trigger": "trigger",
     },
     "composition_interfaces": {
         "__LOCATION": "composition_interfaces/srv/",
-        "composition_interfaces::srv::LoadNode_Response": "load_node",
-        "composition_interfaces::srv::UnloadNode_Request": "unload_node",
-        "composition_interfaces::srv::UnloadNode_Response": "unload_node",
-        "composition_interfaces::srv::ListNodes_Request": "list_nodes",
-        "composition_interfaces::srv::ListNodes_Response": "list_nodes",
-        "composition_interfaces::srv::LoadNode_Request": "load_node"
+        "composition_interfaces::srv::LoadNode": "load_node",
+        "composition_interfaces::srv::UnloadNode": "unload_node",
+        "composition_interfaces::srv::ListNodes": "list_nodes",
     },
     "diagnostic_msgs_srv": {
         "__LOCATION": "diagnostic_msgs/srv/",
-        "diagnostic_msgs::srv::SelfTest_Response": "self_test",
-        "diagnostic_msgs::srv::AddDiagnostics_Response": "add_diagnostics",
-        "diagnostic_msgs::srv::SelfTest_Request": "self_test",
-        "diagnostic_msgs::srv::AddDiagnostics_Request": "add_diagnostics"
+        "diagnostic_msgs::srv::SelfTest": "self_test",
+        "diagnostic_msgs::srv::AddDiagnostics": "add_diagnostics",
     },
     "diagnostic_msgs_msg": {
         "__LOCATION": "diagnostic_msgs/msg/",
@@ -111,12 +121,9 @@ mapping = {
     },
     "nav_msgs_srv": {
         "__LOCATION": "nav_msgs/srv/",
-        "nav_msgs::srv::GetMap_Response": "get_map",
-        "nav_msgs::srv::GetPlan_Response": "get_plan",
-        "nav_msgs::srv::SetMap_Response": "set_map",
-        "nav_msgs::srv::GetPlan_Request": "get_plan",
-        "nav_msgs::srv::SetMap_Request": "set_map",
-        "nav_msgs::srv::GetMap_Request": "get_map"
+        "nav_msgs::srv::GetMap": "get_map",
+        "nav_msgs::srv::GetPlan": "get_plan",
+        "nav_msgs::srv::SetMap": "set_map",
     },
     "nav_msgs_msg": {
         "__LOCATION": "nav_msgs/msg/",
@@ -128,14 +135,10 @@ mapping = {
     },
     "lifecycle_msgs_srv": {
         "__LOCATION": "lifecycle_msgs/srv/",
-        "lifecycle_msgs::srv::ChangeState_Request": "change_state",
-        "lifecycle_msgs::srv::GetAvailableStates_Response": "get_available_states",
-        "lifecycle_msgs::srv::GetState_Request": "get_state",
-        "lifecycle_msgs::srv::GetState_Response": "get_state",
-        "lifecycle_msgs::srv::ChangeState_Response": "change_state",
-        "lifecycle_msgs::srv::GetAvailableTransitions_Request": "get_available_transitions",
-        "lifecycle_msgs::srv::GetAvailableTransitions_Response": "get_available_transitions",
-        "lifecycle_msgs::srv::GetAvailableStates_Request": "get_available_states"
+        "lifecycle_msgs::srv::ChangeState": "change_state",
+        "lifecycle_msgs::srv::GetState": "get_state",
+        "lifecycle_msgs::srv::GetAvailableTransitions": "get_available_transitions",
+        "lifecycle_msgs::srv::GetAvailableStates": "get_available_states"
     },
     "lifecycle_msgs_msg": {    
         "__LOCATION": "lifecycle_msgs/msg/",        
@@ -146,8 +149,7 @@ mapping = {
     },
     "visualization_msgs_srv": {
         "__LOCATION": "visualization_msgs/srv/",
-        "visualization_msgs::srv::GetInteractiveMarkers_Response": "get_interactive_markers",
-        "visualization_msgs::srv::GetInteractiveMarkers_Request": "get_interactive_markers"
+        "visualization_msgs::srv::GetInteractiveMarkers": "get_interactive_markers"
     },
     "visualization_msgs_msg": {
         "__LOCATION": "visualization_msgs/msg/",
@@ -164,18 +166,12 @@ mapping = {
     },
     "rcl_interfaces_srv": {
         "__LOCATION": "rcl_interfaces/srv/",
-        "rcl_interfaces::srv::GetParameters_Request": "get_parameters",
-        "rcl_interfaces::srv::DescribeParameters_Response": "describe_parameters",
-        "rcl_interfaces::srv::GetParameterTypes_Request": "get_parameter_types",
-        "rcl_interfaces::srv::SetParameters_Request": "set_parameters",
-        "rcl_interfaces::srv::SetParametersAtomically_Response": "set_parameters_atomically",
-        "rcl_interfaces::srv::ListParameters_Request": "list_parameters",
-        "rcl_interfaces::srv::SetParameters_Response": "set_parameters",
-        "rcl_interfaces::srv::GetParameters_Response": "get_parameters",
-        "rcl_interfaces::srv::SetParametersAtomically_Request": "set_parameters_atomically",
-        "rcl_interfaces::srv::GetParameterTypes_Response": "get_parameter_types",
-        "rcl_interfaces::srv::DescribeParameters_Request": "describe_parameters",
-        "rcl_interfaces::srv::ListParameters_Response": "list_parameters"
+        "rcl_interfaces::srv::GetParameters": "get_parameters",
+        "rcl_interfaces::srv::GetParameterTypes": "get_parameter_types",
+        "rcl_interfaces::srv::SetParameters": "set_parameters",
+        "rcl_interfaces::srv::ListParameters": "list_parameters",
+        "rcl_interfaces::srv::SetParametersAtomically": "set_parameters_atomically",
+        "rcl_interfaces::srv::DescribeParameters": "describe_parameters",
     },
     "rcl_interfaces_msg": {
         "__LOCATION": "rcl_interfaces/msg/",
@@ -193,8 +189,7 @@ mapping = {
     },
     "sensor_msgs_srv": {
         "__LOCATION": "sensor_msgs/srv/",
-        "sensor_msgs::srv::SetCameraInfo_Request": "set_camera_info",
-        "sensor_msgs::srv::SetCameraInfo_Response": "set_camera_info"
+        "sensor_msgs::srv::SetCameraInfo": "set_camera_info",
     },
     "sensor_msgs_msg": {
         "__LOCATION": "sensor_msgs/msg/",
@@ -228,12 +223,9 @@ mapping = {
     },
     "example_interfaces_srv": {
         "__LOCATION": "example_interfaces/srv/",
-        "example_interfaces::srv::AddTwoInts_Request": "add_two_ints",
-        "example_interfaces::srv::AddTwoInts_Response": "add_two_ints",
-        "example_interfaces::srv::SetBool_Response": "set_bool",
-        "example_interfaces::srv::SetBool_Request": "set_bool",
-        "example_interfaces::srv::Trigger_Response": "trigger",
-        "example_interfaces::srv::Trigger_Request": "trigger"
+        "example_interfaces::srv::AddTwoInts": "add_two_ints",
+        "example_interfaces::srv::SetBool": "set_bool",
+        "example_interfaces::srv::Trigger": "trigger"
     },
     "example_interfaces_msg": {
         "__LOCATION": "example_interfaces/msg/",
@@ -266,6 +258,11 @@ mapping = {
         "example_interfaces::msg::Float64": "float64",
         "example_interfaces::msg::Float32": "float32",
         "example_interfaces::msg::Byte": "byte"
+    },
+    "example_interfaces_act": {
+        "__LOCATION": "example_interfaces/action/",
+        "example_interfaces::action::Fibonacci": "fibonacci"
+
     },
     "geometry_msgs": {
         "__LOCATION": "geometry_msgs/msg/",
