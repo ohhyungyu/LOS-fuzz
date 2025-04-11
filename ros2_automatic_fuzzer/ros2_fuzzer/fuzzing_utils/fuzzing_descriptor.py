@@ -70,18 +70,40 @@ class FuzzTargetProcessor:
         # Primitive type
         if field.type.is_primitive:
             if field.options.is_array: # Not bounded array size ex) float64[]
+                cpp_type = FuzzTargetProcessor.PRIMITIVES_CPP_TYPES[field.type.type_name]
+
                 if not field.options.array_size:
                     array_size = DEFAULT
+                    tmp_fresh = self.get_fresh_variable()
+                    res += preindent + f"{cpp_type} {fresh};\n"
+                    res += preindent + f"std::vector<{cpp_type}> {tmp_fresh};\n"
+
+                    res += (
+                        preindent
+                        + f"for(int __i=0; __i<{array_size}; __i++) " + "{\n"
+                    )
+                    res += (
+                        preindent + "    "
+                        + f"if (!get{field.type.type_name.capitalize()}({fresh})) kill_parent_pid();\n"
+                    )
+                    res += (
+                        preindent + "    "
+                        + f"else {tmp_fresh}.push_back({fresh});\n"
+                    )
+                    res += (
+                        preindent
+                        + "}\n"
+                    )
+
                 else: # bounded array size ex) float64[10]
                     array_size = field.options.array_size
 
-                cpp_type = FuzzTargetProcessor.PRIMITIVES_CPP_TYPES[field.type.type_name]
-                res += preindent + f"std::array<{cpp_type}, {array_size}> {fresh};\n"
-                res += (
-                    preindent
-                    + f"for(int __i=0; __i<{array_size}; __i++) "
-                    + f"if (!get{field.type.type_name.capitalize()}({fresh}[__i])) kill_parent_pid();\n"
-                )
+                    res += preindent + f"std::array<{cpp_type}, {array_size}> {fresh};\n"
+                    res += (
+                        preindent
+                        + f"for(int __i=0; __i<{array_size}; __i++) "
+                        + f"if (!get{field.type.type_name.capitalize()}({fresh}[__i])) kill_parent_pid();\n"
+                    )
             else: # Just variable
                 cpp_type = FuzzTargetProcessor.PRIMITIVES_CPP_TYPES[field.type.type_name]
                 res += preindent + f"{cpp_type} {fresh};\n"
