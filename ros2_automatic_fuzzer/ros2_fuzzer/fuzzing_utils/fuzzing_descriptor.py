@@ -75,8 +75,8 @@ class FuzzTargetProcessor:
                 if not field.options.array_size:
                     array_size = DEFAULT
                     tmp_fresh = self.get_fresh_variable()
-                    res += preindent + f"{cpp_type} {fresh};\n"
-                    res += preindent + f"std::vector<{cpp_type}> {tmp_fresh};\n"
+                    res += preindent + f"{cpp_type} {tmp_fresh};\n"
+                    res += preindent + f"std::vector<{cpp_type}> {fresh};\n"
 
                     res += (
                         preindent
@@ -84,11 +84,11 @@ class FuzzTargetProcessor:
                     )
                     res += (
                         preindent + "    "
-                        + f"if (!get{field.type.type_name.capitalize()}({fresh})) kill_parent_pid();\n"
+                        + f"if (!get{field.type.type_name.capitalize()}({tmp_fresh})) kill_parent_pid();\n"
                     )
                     res += (
                         preindent + "    "
-                        + f"else {tmp_fresh}.push_back({fresh});\n"
+                        + f"else {fresh}.push_back({tmp_fresh});\n"
                     )
                     res += (
                         preindent
