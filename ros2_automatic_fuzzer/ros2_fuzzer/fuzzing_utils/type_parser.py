@@ -129,11 +129,14 @@ class TypeParser:
 
         # If it is a *.srv file content (request --- response),
         # isolate and process only the request part
+        # If one "---" exist in result, then that is Service
         if "---" in ros2_process_result:
             ros2_process_result = ros2_process_result.split("---")[0]
+            
         ros2_process_result = ros2_process_result.splitlines()
         fields = [TypeParser.line2field(line) for line in ros2_process_result]
         fields = [field for field in fields if field is not None]
+
         return ROSType(type_name=type_name, fields=fields)
 
     @staticmethod
