@@ -8,7 +8,7 @@ from ros2_fuzzer.fuzzing_utils.fuzzing_descriptor import FuzzTargetProcessor
 from ros2_fuzzer.fuzzing_utils.generate_cpp_file import generate_request_code
 
 
-def generate_topic_template(action_name: str, source: str, ros_type_str: str, headers_file: str, count: int) -> tuple:
+def generate_action_template(action_name: str, source: str, ros_type_str: str, headers_file: str, count: int) -> tuple:
     '''
     return (request code, importes)
     '''

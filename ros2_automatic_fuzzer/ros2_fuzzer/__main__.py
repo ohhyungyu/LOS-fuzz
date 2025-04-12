@@ -11,6 +11,7 @@ from yaml_utils.yaml_utils import read_and_validate_yaml_file
 from .input_components import ask_for_components
 from .service_fuzzer import generate_service_template
 from .topic_fuzzer import generate_topic_template
+from .action_fuzzer import generate_action_template
 from .fuzzing_utils.generate_cpp_file import generate_cpp_file
 
 
@@ -96,8 +97,17 @@ def main():
 
             elif is_action:
                 count += 1
-                # TODO
-                pass
+                tmp = generate_action_template(
+                    topic_name=name,
+                    source=value["source"],
+                    ros_type_str=value["type"],
+                    headers_file=value["headers_file"],
+                    count=count
+                )
+                request_codes.append(tmp[0])
+                importes.append(tmp[1])
+
+                logging.info(f"{name}: created fuzzer for the topic")
 
         request_all_code = '\n'.join(request_codes)
         all_imports = '\n'.join(importes)
