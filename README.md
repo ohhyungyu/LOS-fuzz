@@ -7,8 +7,16 @@ Seongwon Lee (Sejong university - Republic of Korea)
 Hyungyu Oh (Sejong university - Republic of Korea)   
 
 # COPYRIGHT
+## ros2_fuzz
 Original Project [rosin-project/ros2-fuzz](https://github.com/rosin-project/ros2_fuzz)   
 Copyright (c) 2021 Francisco Martínez Lasaca
 
 This project (LOS-fuzz) is a modified version of the above,  
 extended and maintained by Hyungyu Oh(Sejong university - Republic of Korea) under the same MIT License.
+
+## AFLPlusPlus
+This project includes code from the following open source project:
+
+- [AFL++](https://github.com/AFLplusplus/AFLplusplus)  
+  Licensed under the Apache License, Version 2.0.  
+  See `aflpp/LICENSE` and `aflpp/NOTICE` for details.
