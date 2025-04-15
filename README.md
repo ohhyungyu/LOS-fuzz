@@ -12,7 +12,7 @@ This project includes code from the following open source project:
 - [AFL++](https://github.com/AFLplusplus/AFLplusplus)  
   Licensed under the Apache License, Version 2.0.  
   See `aflpp/LICENSE` and `aflpp/NOTICE` for details.   
-- [rosin-project/ros2-fuzz](https://github.com/rosin-project/ros2_fuzz)  
+- [ros2-fuzz](https://github.com/rosin-project/ros2_fuzz)  
   Copyright (c) 2021 Francisco Martínez Lasaca   
   Licensed under the MIT License
 
